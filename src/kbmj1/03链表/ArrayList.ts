@@ -43,6 +43,9 @@ export default class ArrayList<E> extends AbstractList<E> {
         this.elements[index] = element;
         this._size++;
     }
+    public addElement(element: E): void {
+        this.add(this._size, element);
+    }
 
     public remove(index: number): E  {
         this.rangeCheck(index);
@@ -52,6 +55,7 @@ export default class ArrayList<E> extends AbstractList<E> {
         }
         this.elements[this._size - 1] = null as any;
         this._size--;
+        this.trim();
         return oldValue;
     }
 
@@ -75,8 +79,22 @@ export default class ArrayList<E> extends AbstractList<E> {
         }
         this.elements = newElements;
         console.log(`扩容：${oldCapacity} => ${newCapacity}`);
-
     }
+
+    private trim(): void {
+        const oldCapacity = this.elements.length;
+        const newCapacity = oldCapacity >> 1 ;
+        // 大于一半，或者小于默认容量时不缩容
+        if (this._size >= newCapacity || oldCapacity <= ArrayList.DEFAULT_CAPACITY) return;
+
+        let newElements = new Array<E>(newCapacity);
+        for (let i = 0; i < this._size; i++) {
+            newElements[i] = this.elements[i];
+        }
+        this.elements = newElements;
+        console.log(`缩容：${oldCapacity} => ${newCapacity}`);
+
+    }       
 
     public toString(): string {
         let str = 'size: ' + this._size + ', elements: [';
